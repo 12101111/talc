@@ -945,13 +945,6 @@ impl<S: Source, B: Binning> Talc<S, B> {
     /// Debugging function for checking various assumptions.
     fn scan_for_errors(&self) {
         use core::ops::Range;
-
-        // allocator-api2 doesn't re-export this correctly
-        // because it exports from `alloc` instead of `std`
-        // if `std` and `nightly` are enabled
-        #[cfg(not(feature = "nightly"))]
-        use allocator_api2::alloc::System;
-        #[cfg(feature = "nightly")]
         use std::alloc::System;
 
         let mut vec = allocator_api2::vec::Vec::<Range<*mut u8>, _>::new_in(System);

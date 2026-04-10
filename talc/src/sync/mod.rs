@@ -4,8 +4,11 @@
 //! See [`TalcLock`].
 
 use core::ptr::{NonNull, null_mut};
-
-use allocator_api2::alloc::{AllocError, Allocator, GlobalAlloc, Layout};
+use core::alloc::{Layout, GlobalAlloc};
+#[cfg(not(feature = "nightly"))]
+use allocator_api2::alloc::{AllocError, Allocator};
+#[cfg(feature = "nightly")]
+use core::alloc::{AllocError, Allocator};
 
 use crate::{base::Talc, base::binning::Binning, source::Source};
 

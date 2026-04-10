@@ -5,7 +5,11 @@ use core::{
     ptr::addr_of_mut,
 };
 
-use allocator_api2::alloc::{Allocator, Layout};
+use core::alloc::Layout;
+#[cfg(not(feature = "nightly"))]
+use allocator_api2::alloc::Allocator;
+#[cfg(feature = "nightly")]
+use core::alloc::Allocator;
 
 use crate::{
     base::binning::Binning,

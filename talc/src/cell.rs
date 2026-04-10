@@ -20,7 +20,10 @@ use crate::{
 
 use core::ptr::NonNull;
 
+#[cfg(not(feature = "nightly"))]
 use allocator_api2::alloc::{AllocError, Allocator};
+#[cfg(feature = "nightly")]
+use core::alloc::{AllocError, Allocator};
 
 /// [`TalcCell`] implements [`GlobalAlloc`] and [`Allocator`]
 /// without locking, but is [`!Sync`](Sync).
