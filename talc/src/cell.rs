@@ -626,6 +626,23 @@ impl<S: Source, B: Binning> TalcSyncCell<S, B> {
     pub const unsafe fn new(talc: TalcCell<S, B>) -> Self {
         Self(talc)
     }
+
+    /// Swaps out the source for another.
+    ///
+    /// # Safety
+    ///
+    /// See `Self::new`
+    #[inline]
+    #[track_caller]
+    pub unsafe fn replace_source(&self, source: S) -> S {
+        self.0.replace_source(source)
+    }
+
+    /// Obtain the inner allocation statistics.
+    #[cfg(feature = "counters")]
+    pub fn counters(&self) -> crate::base::Counters {
+        self.0.counters()
+    }
 }
 
 unsafe impl<S: Source, B: Binning> GlobalAlloc for TalcSyncCell<S, B> {
@@ -640,5 +657,41 @@ unsafe impl<S: Source, B: Binning> GlobalAlloc for TalcSyncCell<S, B> {
     #[track_caller]
     unsafe fn realloc(&self, ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8 {
         self.0.realloc(ptr, layout, new_size)
+    }
+}
+
+unsafe impl<S: Source, B: Binning> Allocator for TalcSyncCell<S, B> {
+    fn allocate(&self, layout: Layout) -> Result<NonNull<[u8]>, AllocError> {
+        self.0.allocate(layout)
+    }
+    fn allocate_zeroed(&self, layout: Layout) -> Result<NonNull<[u8]>, AllocError> {
+        self.0.allocate_zeroed(layout)
+    }
+    unsafe fn deallocate(&self, ptr: NonNull<u8>, layout: Layout) {
+        self.0.deallocate(ptr, layout)
+    }
+    unsafe fn grow(
+        &self,
+        ptr: NonNull<u8>,
+        old_layout: Layout,
+        new_layout: Layout,
+    ) -> Result<NonNull<[u8]>, AllocError> {
+        self.0.grow(ptr, old_layout, new_layout)
+    }
+    unsafe fn grow_zeroed(
+        &self,
+        ptr: NonNull<u8>,
+        old_layout: Layout,
+        new_layout: Layout,
+    ) -> Result<NonNull<[u8]>, AllocError> {
+        self.0.grow_zeroed(ptr, old_layout, new_layout)
+    }
+    unsafe fn shrink(
+        &self,
+        ptr: NonNull<u8>,
+        old_layout: Layout,
+        new_layout: Layout,
+    ) -> Result<NonNull<[u8]>, AllocError> {
+        self.0.shrink(ptr, old_layout, new_layout)
     }
 }
