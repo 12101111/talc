@@ -5,7 +5,7 @@
 //! - `cargo miri run --example allocator_api`
 
 #![cfg_attr(feature = "nightly", feature(allocator_api))]
-
+#[cfg(not(feature = "nightly"))]
 use allocator_api2::vec::Vec;
 use talc::{DefaultBinning, TalcCell, min_first_heap_size, source::Manual};
 
